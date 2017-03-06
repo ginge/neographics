@@ -41,12 +41,14 @@ typedef struct n_GContext {
     bool antialias;
     bool stroke_caps;
     uint16_t stroke_width;
+#ifndef NGFX_IS_CORE 
     GContext * underlying_context; // This is necessary for the time being
                                    // because direct framebuffer access doens't
                                    // exist in the development/testing environment.
                                    // Once we move to prod & a firmware where
                                    // neographics _is_ the underlying context,
                                    // this will no longer be necessary.
+#endif
     GBitmap * bitmap;
     uint8_t * fbuf;
 } n_GContext;
@@ -70,5 +72,5 @@ void n_graphics_context_end(n_GContext * ctx);
 // bool n_graphics_release_frame_buffer(n_GContext * ctx, n_GBitmap * bitmap);
 
 n_GContext * n_graphics_context_from_buffer(uint8_t * buf);
-n_GContext * n_graphics_context_from_graphics_context(GContext * ctx);
+// n_GContext * n_graphics_context_from_graphics_context(GContext * ctx);
 void n_graphics_context_destroy(n_GContext * ctx);

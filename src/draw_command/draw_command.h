@@ -194,3 +194,12 @@ void n_gdraw_command_image_destroy(n_GDrawCommandImage * image);
 n_GDrawCommandSequence * n_gdraw_command_sequence_create_with_resource(uint32_t resource_id);
 n_GDrawCommandSequence * n_gdraw_command_sequence_clone(n_GDrawCommandSequence * image);
 void n_gdraw_command_sequence_destroy(n_GDrawCommandSequence * sequence);
+
+
+
+
+
+
+
+
+void resource_load(n_GDrawCommandImage *image, ResHandle handle, size_t image_size);
