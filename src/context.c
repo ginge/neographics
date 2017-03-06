@@ -55,22 +55,26 @@ void n_graphics_context_set_stroke_caps(n_GContext * ctx, bool stroke_caps) {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void n_graphics_context_begin(n_GContext * ctx) {
+#ifndef NGFX_IS_CORE 
     if (ctx->underlying_context) {
         ctx->bitmap = graphics_capture_frame_buffer(ctx->underlying_context);
         ctx->fbuf = gbitmap_get_data(ctx->bitmap);
     }
+#endif
 }
 
 void n_graphics_context_end(n_GContext * ctx) {
+#ifndef NGFX_IS_CORE 
     if (ctx->underlying_context) {
         graphics_release_frame_buffer(ctx->underlying_context, ctx->bitmap);
         ctx->bitmap = NULL;
         ctx->fbuf = NULL;
     }
+#endif
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+#ifndef NGFX_IS_CORE 
 GBitmap * n_graphics_capture_frame_buffer(n_GContext * ctx) {
     return graphics_capture_frame_buffer(ctx->underlying_context);
 }
@@ -82,12 +86,15 @@ GBitmap * n_graphics_capture_frame_buffer_format(n_GContext * ctx, GBitmapFormat
 bool n_graphics_release_frame_buffer(n_GContext * ctx, GBitmap * bitmap) {
     return graphics_release_frame_buffer(ctx->underlying_context, bitmap);
 }
+#endif
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static n_GContext * n_graphics_context_create() {
-    n_GContext * out = calloc(1, sizeof(n_GContext));
-    out->underlying_context = NULL;
+    n_GContext * out = (n_GContext *)malloc(sizeof(n_GContext));
+    //out->underlying_context = NULL;
+    if (out == NULL)
+        printf("NG: NO HEAP FREE\n");
     n_graphics_context_set_stroke_color(out, (n_GColor) {.argb = 0b11000000});
     n_graphics_context_set_fill_color(out, (n_GColor) {.argb = 0b11111111});
     n_graphics_context_set_text_color(out, (n_GColor) {.argb = 0b11000000});
@@ -104,11 +111,13 @@ n_GContext * n_graphics_context_from_buffer(uint8_t * buf) {
     return out;
 }
 
-n_GContext * n_graphics_context_from_graphics_context(GContext * ctx) {
+#ifndef NGFX_IS_CORE 
+n_GContext * n_graphics_context_from_graphics_context(uint8_t * ctx) {
     n_GContext * out = n_graphics_context_create();
     out->underlying_context = ctx;
     return out;
 }
+#endif
 
 void n_graphics_context_destroy(n_GContext * ctx) {
     free(ctx);
